@@ -1,4 +1,4 @@
-# 🎲 Aplikasi Pembagi Kelompok Secara Acak
+# 🎲 ACAKADIL - Aplikasi Pembagi Kelompok Secara Acak
 
 Aplikasi web gratis untuk membagi siswa ke dalam kelompok secara acak dan merata berdasarkan nomor presensi.
 
