@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pembagi Kelompok Secara Acak</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-shadow { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .group-card { transition: all 0.3s ease; }
+        .group-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen py-6 px-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8 animate-fade-in">
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">
+                🎲 Acakadil | Aplikasi Pembagi Kelompok Secara Acak 
+            </h1>
+            <p class="text-white/90 text-lg">Dibuat dari Python, dikonversi ke HTML, CSS, & JavaScript dengan sentuhan AI</p> 
+        </div>
+
+        <!-- Main Card -->
+        <div class="bg-white rounded-2xl card-shadow p-6 md:p-8 mb-6 animate-fade-in">
+            <!-- Description Section -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+                    📋 Deskripsi
+                </h2>
+                <p class="text-gray-600 leading-relaxed">
+                    Aplikasi Gratis ini berfungsi untuk mengelompokkan siswa berdasarkan nomor presensi, secara acak dan merata sesuai dengan jumlah pembagian kelompok yang dikehendaki tanpa terduplikasi. Dan jika ada siswa yang ingin dihilangkan atau tidak ingin dimasukkan ke dalam pembagian kelompok ini, maka hal ini juga bisa dilakukan dengan cara mengisikan nomor-nomor presensi yang ingin dihilangkan.
+                </p>
+            </div>
+
+            <!-- Instructions Section -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+                    📝 Cara Pakai
+                </h2>
+                <ol class="text-gray-600 space-y-2 list-decimal list-inside">
+                    <li>Masukkan jumlah siswa yang ingin dimasukkan dalam pembagian kelompok ini (jumlah real siswa saat ini)</li>
+                    <li>Anda ingin membaginya menjadi berapa kelompok? Masukkan angkanya</li>
+                    <li>Masukkan jumlah total siswa dalam 1 kelas sesuai daftar presensi (jumlah keseluruhan siswa dalam 1 kelas)</li>
+                    <li>Nomor presensi yang ingin dihilangkan (opsional), dipisahkan dengan koma (contoh: 3,15,27)</li>
+                    <li>Klik tombol "Bagi Kelompok Secara Acak" untuk melihat hasilnya</li>
+                </ol>
+            </div>
+
+            <!-- Input Form -->
+            <div class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Jumlah siswa yang ingin dibagi kelompok
+                        </label>
+                        <input type="number" id="totalStudents" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                               placeholder="Contoh: 30" min="1">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Jumlah kelompok yang diinginkan
+                        </label>
+                        <input type="number" id="numGroups" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                               placeholder="Contoh: 5" min="1">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Total keseluruhan siswa dalam 1 kelas (sesuai daftar presensi)
+                    </label>
+                    <input type="number" id="classSize" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                           placeholder="Contoh: 35" min="1">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Nomor presensi yang ingin dihilangkan (opsional)
+                    </label>
+                    <input type="text" id="excludedNumbers" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                           placeholder="Contoh: 3,15,27 (kosongkan jika tidak ada)">
+                    <p class="text-sm text-gray-500 mt-1">Pisahkan dengan koma jika lebih dari satu nomor</p>
+                </div>
+
+                <button onclick="generateGroups()" 
+                        class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-4 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg">
+                    🎯 Bagi Kelompok Secara Acak
+                </button>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden bg-white rounded-2xl card-shadow p-6 md:p-8 animate-fade-in">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                🎉 Hasil Pembagian Kelompok Secara Acak
+            </h2>
+            <div id="groupsContainer" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            </div>
+            
+            <div class="mt-6 text-center space-y-4">
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button onclick="generateGroups()" 
+                            class="bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 transition-all duration-200">
+                        🔄 Acak Ulang
+                    </button>
+                    <button onclick="resetForm()" 
+                            class="bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-gray-700 transition-all duration-200">
+                        ↩️ Reset Form
+                    </button>
+                </div>
+                
+                <div class="border-t pt-4">
+                    <p class="text-sm text-gray-600 mb-3">📤 Ekspor Hasil:</p>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <button onclick="exportToJPG()" 
+                                class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-all duration-200 text-sm">
+                            📷 Ekspor ke JPG
+                        </button>
+                        <button onclick="exportToPDF()" 
+                                class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-all duration-200 text-sm">
+                            📄 Ekspor ke PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Section -->
+        <div class="bg-white rounded-2xl card-shadow p-6 md:p-8 mb-6 text-center animate-fade-in">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center justify-center">
+                ⭐ Suka dengan Aplikasi Ini?
+            </h3>
+            <p class="text-gray-600 mb-6">
+                Bantu kami dengan memberikan review Bintang 5 di Google Maps! Review Anda sangat berarti untuk pengembangan aplikasi ini, dan aplikasi-aplikasi gratis lainnya di masa depan.
+            </p>
+            <button onclick="openGoogleReview()" 
+                    class="inline-flex items-center bg-gradient-to-b from-yellow-500 to-orange-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-yellow-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 shadow-lg">
+                🌟 Berikan Review di Google Maps
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8 text-white/80">
+            <p class="text-sm">
+                Jika mengalami error atau ada pertanyaan, silakan hubungi nomor WA 
+                <a href="https://wa.me/6285641051211" class="text-white font-semibold hover:underline" target="_blank">
+                    085641051211 (Dimas BN / Azhiro)
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function generateGroups() {
+            // Clear previous error messages
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.classList.add('hidden');
+            
+            try {
+                // Get input values
+                const totalStudents = parseInt(document.getElementById('totalStudents').value);
+                const numGroups = parseInt(document.getElementById('numGroups').value);
+                const classSize = parseInt(document.getElementById('classSize').value);
+                const excludedInput = document.getElementById('excludedNumbers').value.trim();
+                
+                // Validate inputs
+                if (!totalStudents || !numGroups || !classSize) {
+                    throw new Error('Semua field wajib harus diisi dengan angka yang valid.');
+                }
+                
+                if (totalStudents <= 0 || numGroups <= 0 || classSize <= 0) {
+                    throw new Error('Semua input nomor harus bernilai positif.');
+                }
+                
+                if (totalStudents < numGroups) {
+                    throw new Error('Jumlah total siswa harus lebih besar atau sama dengan jumlah kelompok.');
+                }
+                
+                // Process excluded numbers
+                let excludedNumbers = [];
+                if (excludedInput) {
+                    excludedNumbers = excludedInput.split(',').map(num => {
+                        const parsed = parseInt(num.trim());
+                        if (isNaN(parsed)) {
+                            throw new Error('Nomor yang dikecualikan harus berupa angka yang valid.');
+                        }
+                        return parsed;
+                    });
+                }
+                
+                // Check if we have enough available students
+                const availableStudents = classSize - excludedNumbers.length;
+                if (totalStudents > availableStudents) {
+                    throw new Error('Jumlah siswa yang ingin dibagi tidak dapat melebihi total siswa yang tersedia setelah penghilangan nomor.');
+                }
+                
+                // Generate available numbers
+                const availableNumbers = [];
+                for (let i = 1; i <= classSize; i++) {
+                    if (!excludedNumbers.includes(i)) {
+                        availableNumbers.push(i);
+                    }
+                }
+                
+                // Randomly select students
+                const selectedNumbers = [];
+                const tempAvailable = [...availableNumbers];
+                
+                for (let i = 0; i < totalStudents; i++) {
+                    const randomIndex = Math.floor(Math.random() * tempAvailable.length);
+                    selectedNumbers.push(tempAvailable.splice(randomIndex, 1)[0]);
+                }
+                
+                // Divide into groups
+                const groups = Array.from({ length: numGroups }, () => []);
+                selectedNumbers.forEach((num, index) => {
+                    groups[index % numGroups].push(num);
+                });
+                
+                // Sort each group
+                groups.forEach(group => group.sort((a, b) => a - b));
+                
+                // Display results
+                displayResults(groups);
+                
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+        
+        function displayResults(groups) {
+            const resultsSection = document.getElementById('resultsSection');
+            const groupsContainer = document.getElementById('groupsContainer');
+            
+            // Clear previous results
+            groupsContainer.innerHTML = '';
+            
+            // Create group cards
+            groups.forEach((group, index) => {
+                const groupCard = document.createElement('div');
+                groupCard.className = 'group-card bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4';
+                
+                groupCard.innerHTML = `
+                    <h3 class="font-semibold text-lg text-gray-800 mb-3 flex items-center">
+                        👥 Kelompok ${index + 1}
+                        <span class="ml-2 text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                            ${group.length} siswa
+                        </span>
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        ${group.map(num => `
+                            <span class="bg-white border border-gray-300 px-3 py-1 rounded-full text-sm font-medium text-gray-700">
+                                ${num}
+                            </span>
+                        `).join('')}
+                    </div>
+                `;
+                
+                groupsContainer.appendChild(groupCard);
+            });
+            
+            // Show results section
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = `Error: ${message}`;
+            errorDiv.classList.remove('hidden');
+            errorDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function resetForm() {
+            // Clear all inputs
+            document.getElementById('totalStudents').value = '';
+            document.getElementById('numGroups').value = '';
+            document.getElementById('classSize').value = '';
+            document.getElementById('excludedNumbers').value = '';
+            
+            // Hide results and errors
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Export to JPG function
+        function exportToJPG() {
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection.classList.contains('hidden')) {
+                showError('Tidak ada hasil untuk diekspor. Silakan bagi kelompok terlebih dahulu.');
+                return;
+            }
+
+            // Show loading message
+            const originalText = event.target.textContent;
+            event.target.textContent = '⏳ Mengekspor...';
+            event.target.disabled = true;
+
+            setTimeout(() => {
+                try {
+                    // Create a clean version for export
+                    const exportElement = createExportElement();
+                    document.body.appendChild(exportElement);
+
+                    html2canvas(exportElement, {
+                        backgroundColor: '#ffffff',
+                        scale: 1.5,
+                        logging: false,
+                        useCORS: true
+                    }).then(canvas => {
+                        // Remove the temporary element
+                        document.body.removeChild(exportElement);
+
+                        // Download the image
+                        const link = document.createElement('a');
+                        link.download = `pembagian-kelompok-${new Date().toISOString().split('T')[0]}.jpg`;
+                        link.href = canvas.toDataURL('image/jpeg', 0.95);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+
+                        // Reset button
+                        event.target.textContent = originalText;
+                        event.target.disabled = false;
+                    }).catch(error => {
+                        console.error('Export error:', error);
+                        showError('Gagal mengekspor ke JPG. Silakan coba lagi.');
+                        event.target.textContent = originalText;
+                        event.target.disabled = false;
+                    });
+
+                } catch (error) {
+                    console.error('Export error:', error);
+                    showError('Gagal mengekspor ke JPG. Silakan coba lagi.');
+                    event.target.textContent = originalText;
+                    event.target.disabled = false;
+                }
+            }, 100);
+        }
+
+        // Export to PDF function
+        function exportToPDF() {
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection.classList.contains('hidden')) {
+                showError('Tidak ada hasil untuk diekspor. Silakan bagi kelompok terlebih dahulu.');
+                return;
+            }
+
+            // Show loading message
+            const originalText = event.target.textContent;
+            event.target.textContent = '⏳ Mengekspor...';
+            event.target.disabled = true;
+
+            setTimeout(() => {
+                try {
+                    // Create a clean version for export
+                    const exportElement = createExportElement();
+                    document.body.appendChild(exportElement);
+
+                    html2canvas(exportElement, {
+                        backgroundColor: '#ffffff',
+                        scale: 1.5,
+                        logging: false,
+                        useCORS: true
+                    }).then(canvas => {
+                        // Remove the temporary element
+                        document.body.removeChild(exportElement);
+
+                        // Create PDF using jsPDF
+                        const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+                        
+                        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                        const imgWidth = 210; // A4 width in mm
+                        const pageHeight = 295; // A4 height in mm
+                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                        let heightLeft = imgHeight;
+
+                        let position = 0;
+
+                        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+
+                        while (heightLeft >= 0) {
+                            position = heightLeft - imgHeight;
+                            pdf.addPage();
+                            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                            heightLeft -= pageHeight;
+                        }
+
+                        pdf.save(`pembagian-kelompok-${new Date().toISOString().split('T')[0]}.pdf`);
+
+                        // Reset button
+                        event.target.textContent = originalText;
+                        event.target.disabled = false;
+                    }).catch(error => {
+                        console.error('Export error:', error);
+                        showError('Gagal mengekspor ke PDF. Silakan coba lagi.');
+                        event.target.textContent = originalText;
+                        event.target.disabled = false;
+                    });
+
+                } catch (error) {
+                    console.error('Export error:', error);
+                    showError('Gagal mengekspor ke PDF. Silakan coba lagi.');
+                    event.target.textContent = originalText;
+                    event.target.disabled = false;
+                }
+            }, 100);
+        }
+
+        // Create a clean export element
+        function createExportElement() {
+            const exportDiv = document.createElement('div');
+            exportDiv.style.position = 'absolute';
+            exportDiv.style.left = '-9999px';
+            exportDiv.style.top = '0';
+            exportDiv.style.backgroundColor = '#ffffff';
+            exportDiv.style.padding = '40px';
+            exportDiv.style.fontFamily = 'Inter, sans-serif';
+            exportDiv.style.width = '800px';
+
+            // Get current date
+            const currentDate = new Date().toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Get input values for the header
+            const totalStudents = document.getElementById('totalStudents').value;
+            const numGroups = document.getElementById('numGroups').value;
+            const classSize = document.getElementById('classSize').value;
+
+            exportDiv.innerHTML = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="font-size: 28px; font-weight: bold; color: #1f2937; margin-bottom: 10px;">
+                        🎲 Hasil Pembagian Kelompok Secara Acak by Acakadil
+                    </h1>
+                    <p style="color: #6b7280; font-size: 16px; margin-bottom: 5px;">
+                        Tanggal: ${currentDate}
+                    </p>
+                    <p style="color: #6b7280; font-size: 14px;">
+                        ${totalStudents} siswa dibagi menjadi ${numGroups} kelompok dari total ${classSize} siswa
+                    </p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    ${Array.from(document.querySelectorAll('#groupsContainer .group-card')).map((card, index) => {
+                        const groupNumbers = Array.from(card.querySelectorAll('span')).slice(1).map(span => span.textContent.trim());
+                        return `
+                            <div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; background: #f9fafb;">
+                                <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 15px;">
+                                    👥 Kelompok ${index + 1} (${groupNumbers.length} siswa)
+                                </h3>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${groupNumbers.map(num => `
+                                        <span style="background: #ffffff; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 500; color: #374151;">
+                                            ${num}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                    <p style="color: #6b7280; font-size: 12px;">
+                        Dibuat dengan Aplikasi Pembagi Kelompok Secara Acak - WA: 085641051211
+                        Link Aplikasi: <a href="https://dimasbn.azhiro.net/" target="_blank" style="color: #2563eb;">dimasbn.azhiro.net</a>
+                    </p>
+                </div>
+            `;
+
+            return exportDiv;
+        }
+
+        // Google Maps review function
+        function openGoogleReview() {
+            const reviewUrl = 'https://g.page/r/CRZT2jOWS46AEB0/review';
+            
+            // Try to open in new window first
+            const newWindow = window.open(reviewUrl, '_blank', 'noopener,noreferrer');
+            
+            // If popup blocked, show alternative
+            if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+                // Create a temporary link and click it
+                const link = document.createElement('a');
+                link.href = reviewUrl;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Show instruction if still blocked
+                setTimeout(() => {
+                    alert('Jika halaman review tidak terbuka, silakan copy link ini dan buka di tab baru:\n\n' + reviewUrl);
+                }, 1000);
+            }
+        }
+
+        // Allow Enter key to trigger group generation
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                generateGroups();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974f9b7603e6fce3',t:'MTc1NjE3MjI4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
