@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -96,7 +95,7 @@
                     <p class="text-sm text-gray-500 mt-1">Pisahkan dengan koma jika lebih dari satu nomor</p>
                 </div>
 
-                <button onclick="_0x1234()" 
+                <button onclick="generateGroups()" 
                         class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-4 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg">
                     🎯 Bagi Kelompok Secara Acak
                 </button>
@@ -117,11 +116,11 @@
             
             <div class="mt-6 text-center space-y-4">
                 <div class="flex flex-wrap justify-center gap-3">
-                    <button onclick="_0x1234()" 
+                    <button onclick="generateGroups()" 
                             class="bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 transition-all duration-200">
                         🔄 Acak Ulang
                     </button>
-                    <button onclick="_0x5678()" 
+                    <button onclick="resetForm()" 
                             class="bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-gray-700 transition-all duration-200">
                         ↩️ Reset Form
                     </button>
@@ -130,83 +129,405 @@
                 <div class="border-t pt-4">
                     <p class="text-sm text-gray-600 mb-3">📤 Ekspor Hasil:</p>
                     <div class="flex flex-wrap justify-center gap-3">
-                        <button onclick="_0x9abc()" 
+                        <button onclick="exportToJPG()" 
                                 class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-all duration-200 text-sm">
                             📷 Ekspor ke JPG
                         </button>
-                        <button onclick="_0xdef0()" 
+                        <button onclick="exportToPDF()" 
                                 class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-all duration-200 text-sm">
-                            �iforme
+                            📄 Ekspor ke PDF
                         </button>
                     </div>
                 </div>
             </div>
-
-            <!-- Review Section -->
-            <div class="bg-white rounded-2xl card-shadow p-6 md:p-8 mb-6 text-center animate-fade-in">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center justify-center">
-                    ⭐ Suka dengan Aplikasi Ini?
-                </h3>
-                <p class="text-gray-600 mb-6">
-                    Bantu kami dengan memberikan review Bintang 5 di Google Maps! Review Anda sangat berarti untuk pengembangan aplikasi ini, dan aplikasi-aplikasi gratis lainnya di masa depan.
-                </p>
-                <button onclick="_0x1a2b()" 
-                        class="inline-flex items-center bg-gradient-to-b from-yellow-500 to-orange-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-yellow-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 shadow-lg">
-                    🌟 Berikan Review di Google Maps
-                </button>
-            </div>
-
-            <!-- Footer -->
-            <div class="text-center mt-8 text-white/80">
-                <p class="text-sm">
-                    Jika mengalami error atau ada pertanyaan, silakan hubungi nomor WA 
-                    <a href="https://wa.me/6285641051211" class="text-white font-semibold hover:underline" target="_blank">
-                        085641051211 (Dimas BN / Azhiro)
-                    </a>
-                </p>
-            </div>
         </div>
 
-        <script>
-        (function(){var _0x1a2b=function(){window.open('https://g.page/r/CRZT2jOWS46AEB0/review','_blank','noopener,noreferrer')||function(){var _0x2b3c=document.createElement('a');_0x2b3c.href='https://g.page/r/CRZT2jOWS46AEB0/review';_0x2b3c.target='_blank';_0x2b3c.rel='noopener noreferrer';document.body.appendChild(_0x2b3c);_0x2b3c.click();document.body.removeChild(_0x2b3c);setTimeout(function(){alert('Jika halaman review tidak terbuka, silakan copy link ini dan buka di tab baru:\n\nhttps://g.page/r/CRZT2jOWS46AEB0/review')},1000)}()};var _0x1234=function(){var _0x3d4e=document.getElementById('errorMessage');_0x3d4e.classList.add('hidden');try{var _0x4e5f=parseInt(document.getElementById('totalStudents').value);var _0x5f60=parseInt(document.getElementById('numGroups').value);var _0x6071=parseInt(document.getElementById('classSize').value);var _0x7182=document.getElementById('excludedNumbers').value.trim();if(!_0x4e5f||!_0x5f60||!_0x6071){throw new Error(btoa('Semua field wajib harus diisi dengan angka yang valid.'))}if(_0x4e5f<=0||_0x5f60<=0||_0x6071<=0){throw new Error(btoa('Semua input nomor harus bernilai positif.'))}if(_0x4e5f<_0x5f60){throw new Error(btoa('Jumlah total siswa harus lebih besar atau sama dengan jumlah kelompok.'))}var _0x8293=[];if(_0x7182){_0x8293=_0x7182.split(',').map(function(_0x9a0b){var _0xa0b1=parseInt(_0x9a0b.trim());if(isNaN(_0xa0b1)){throw new Error(btoa('Nomor yang dikecualikan harus berupa angka yang valid.'))}return _0xa0b1})}var _0xb1c2=_0x6071-_0x8293.length;if(_0x4e5f>_0xb1c2){throw new Error(btoa('Jumlah siswa yang ingin dibagi tidak dapat melebihi total siswa yang tersedia setelah penghilangan nomor.'))}var _0xc2d3=[];for(var _0xd3e4=1;_0xd3e4<=_0x6071;_0xd3e4++){if(!_0x8293.includes(_0xd3e4)){_0xc2d3.push(_0xd3e4)}}var _0xe4f5=[];var _0xf506=[..._0xc2d3];for(var _0x0617=0;_0x0617<_0x4e5f;_0x0617++){var _0x1728=Math.floor(Math.random()*_0xf506.length);_0xe4f5.push(_0xf506.splice(_0x1728,1)[0])}var _0x2839=Array.from({length:_0x5f60},function(){return[]});_0xe4f5.forEach(function(_0x394a,_0x4a5b){_0x2839[_0x4a5b%_0x5f60].push(_0x394a)});_0x2839.forEach(function(_0x5b6c){_0x5b6c.sort(function(_0x6c7d,_0x7d8e){return _0x6c7d-_0x7d8e})});_0x8e9f(_0x2839)}catch(_0x9fa0){_0xa0b1(_0x9fa0.message)}};var _0x8e9f=function(_0xb1c2){var _0xc2d3=document.getElementById('resultsSection');var _0xd3e4=document.getElementById('groupsContainer');_0xd3e4.innerHTML='';_0xb1c2.forEach(function(_0xe4f5,_0xf506){var _0x0617=document.createElement('div');_0x0617.className='group-card bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4';_0x0617.innerHTML='<h3 class="font-semibold text-lg text-gray-800 mb-3 flex items-center">👥 Kelompok '+(_0xf506+1)+'<span class="ml-2 text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">'+_0xe4f5.length+' siswa</span></h3><div class="flex flex-wrap gap-2">'+_0xe4f5.map(function(_0x1728){return'<span class="bg-white border border-gray-300 px-3 py-1 rounded-full text-sm font-medium text-gray-700">'+_0x1728+'</span>'}).join('')+'</div>';_0xd3e4.appendChild(_0x0617)});_0xc2d3.classList.remove('hidden');_0xc2d3.scrollIntoView({behavior:'smooth'})};var _0xa0b1=function(_0x2839){var _0x394a=document.getElementById('errorMessage');_0x394a.textContent='Error: '+atob(_0x2839);_0x394a.classList.remove('hidden');_0x394a.scrollIntoView({behavior:'smooth'})};var _0x5678=function(){document.getElementById('totalStudents').value='';document.getElementById('numGroups').value='';document.getElementById('classSize').value='';document.getElementById('excludedNumbers').value='';document.getElementById('resultsSection').classList.add('hidden');document.getElementById('errorMessage').classList.add('hidden');window.scrollTo({top:0,behavior:'smooth'})};var _0x9abc=function(){var _0x4a5b=document.getElementById('resultsSection');if(_0x4a5b.classList.contains('hidden')){_0xa0b1(btoa('Tidak ada hasil untuk diekspor. Silakan bagi kelompok terlebih dahulu.'));return}var _0x5b6c=event.target.textContent;event.target.textContent='⏳ Mengekspor...';event.target.disabled=true;setTimeout(function(){try{var _0x6c7d=_0x7d8e();document.body.appendChild(_0x6c7d);html2canvas(_0x6c7d,{backgroundColor:'#ffffff',scale:1.5,logging:false,useCORS:true}).then(function(_0x8e9f){document.body.removeChild(_0x6c7d);var _0x9fa0=document.createElement('a');_0x9fa0.download='pembagian-kelompok-'+new Date().toISOString().split('T')[0]+'.jpg';_0x9fa0.href=_0x8e9f.toDataURL('image/jpeg',0.95);document.body.appendChild(_0x9fa0);_0x9fa0.click();document.body.removeChild(_0x9fa0);event.target.textContent=_0x5b6c;event.target.disabled=false}).catch(function(_0xa0b1){console.error('Export error:',_0xa0b1);_0xa0b1(btoa('Gagal mengekspor ke JPG. Silakan coba lagi.'));event.target.textContent=_0x5b6c;event.target.disabled=false})}catch(_0xb1c2){console.error('Export error:',_0xb1c2);_0xa0b1(btoa('Gagal mengekspor ke JPG. Silakan coba lagi.'));event.target.textContent=_0x5b6c;event.target.disabled=false}},100)};var _0xdef0=function(){var _0xc2d3=document.getElementById('resultsSection');if(_0xc2d3.classList.contains('hidden')){_0xa0b1(btoa('Tidak ada hasil untuk diekspor. Silakan bagi kelompok terlebih dahulu.'));return}var _0xd3e4=event.target.textContent;event.target.textContent='⏳ Mengekspor...';event.target.disabled=true;setTimeout(function(){try{var _0xe4f5=_0x7d8e();document.body.appendChild(_0xe4f5);html2canvas(_0xe4f5,{backgroundColor:'#ffffff',scale:1.5,logging:false,useCORS:true}).then(function(_0xf506){document.body.removeChild(_0xe4f5);var _0x0617=new window.jspdf.jsPDF('p','mm','a4');var _0x1728=_0xf506.toDataURL('image/jpeg',0.95);var _0x2839=210;var _0x394a=(_0xf506.height*_0x2839)/_0xf506.width;var _0x4a5b=_0x394a;var _0x5b6c=0;_0x0617.addImage(_0x1728,'JPEG',0,_0x5b6c,_0x2839,_0x394a);_0x4a5b-=_0x394a;while(_0x4a5b>=0){_0x5b6c=_0x4a5b-_0x394a;_0x0617.addPage();_0x0617.addImage(_0x1728,'JPEG',0,_0x5b6c,_0x2839,_0x394a);_0x4a5b-=_0x394a}_0x0617.save('pembagian-kelompok-'+new Date().toISOString().split('T')[0]+'.pdf');event.target.textContent=_0xd3e4;event.target.disabled=false}).catch(function(_0x6c7d){console.error('Export error:',_0x6c7d);_0xa0b1(btoa('Gagal mengekspor ke PDF. Silakan coba lagi.'));event.target.textContent=_0xd3e4;event.target.disabled=false})}catch(_0x7d8e){console.error('Export error:',_0x7d8e);_0xa0b1(btoa('Gagal mengekspor ke PDF. Silakan coba lagi.'));event.target.textContent=_0xd3e4;event.target.disabled=false}},100)};var _0x7d8e=function(){var _0x8e9f=document.createElement('div');_0x8e9f.style.position='absolute';_0x8e9f.style.left='-9999px';_0x8e9f.style.top='0';_0x8e9f.style.backgroundColor='#ffffff';_0x8e9f.style.padding='40px';_0x8e9f.style.fontFamily='Inter, sans-serif';_0x8e9f.style.width='800px';var _0x9fa0=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});var _0xa0b1=document.getElementById('totalStudents').value;var _0xb1c2=document.getElementById('numGroups').value;var _0xc2d3=document.getElementById('classSize').value;_0x8e9f.innerHTML='<div style="text-align: center; margin-bottom: 30px;"><h1 style="font-size: 28px; font-weight: bold; color: #1f2937; margin-bottom: 10px;">🎲 Hasil Pembagian Kelompok Secara Acak by ACAKADIL</h1><p style="color: #6b7280; font-size: 16px; margin-bottom: 5px;">Tanggal: '+_0x9fa0+'</p><p style="color: #6b7280; font-size: 14px;">'+_0xa0b1+' siswa dibagi menjadi '+_0xb1c2+' kelompok dari total '+_0xc2d3+' siswa</p></div><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">'+Array.from(document.querySelectorAll('#groupsContainer .group-card')).map(function(_0xd3e4,_0xe4f5){var _0xf506=Array.from(_0xd3e4.querySelectorAll('span')).slice(1).map(function(_0x0617){return _0x0617.textContent.trim()});return'<div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; background: #f9fafb;"><h3 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 15px;">👥 Kelompok '+(_0xe4f5+1)+' ('+_0xf506.length+' siswa)</h3><div style="display: flex; flex-wrap: wrap; gap: 8px;">'+_0xf506.map(function(_0x1728){return'<span style="background: #ffffff; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 500; color: #374151;">'+_0x1728+'</span>'}).join('')+'</div></div>'}).join('')+'</div><div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;"><p style="color: #6b7280; font-size: 12px;">Dibuat dengan Aplikasi Pembagi Kelompok Secara Acak - WA: 085641051211<br>Link Aplikasi: <a href="https://dimasbn.azhiro.net/" target="_blank" style="color: #2563eb;">dimasbn.azhiro.net</a></p></div>';return _0x8e9f};document.addEventListener('keypress',function(_0x2839){if(_0x2839.key==='Enter'){_0x1234()}});})();
-        </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974f9b7603e6fce3',t:'MTc1NjE3MjI4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
-</body>
+        <!-- Review Section -->
+        <div class="bg-white rounded-2xl card-shadow p-6 md:p-8 mb-6 text-center animate-fade-in">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center justify-center">
+                ⭐ Suka dengan Aplikasi Ini?
+            </h3>
+            <p class="text-gray-600 mb-6">
+                Bantu kami dengan memberikan review Bintang 5 di Google Maps! Review Anda sangat berarti untuk pengembangan aplikasi ini, dan aplikasi-aplikasi gratis lainnya di masa depan.
+            </p>
+            <button onclick="openGoogleReview()" 
+                    class="inline-flex items-center bg-gradient-to-b from-yellow-500 to-orange-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-yellow-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 shadow-lg">
+                🌟 Berikan Review di Google Maps
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8 text-white/80">
+            <p class="text-sm">
+                Jika mengalami error atau ada pertanyaan, silakan hubungi nomor WA 
+                <a href="https://wa.me/6285641051211" class="text-white font-semibold hover:underline" target="_blank">
+                    085641051211 (Dimas BN / Azhiro)
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function generateGroups() {
+            // Clear previous error messages
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.classList.add('hidden');
+            
+            try {
+                // Get input values
+                const totalStudents = parseInt(document.getElementById('totalStudents').value);
+                const numGroups = parseInt(document.getElementById('numGroups').value);
+                const classSize = parseInt(document.getElementById('classSize').value);
+                const excludedInput = document.getElementById('excludedNumbers').value.trim();
+                
+                // Validate inputs
+                if (!totalStudents || !numGroups || !classSize) {
+                    throw new Error('Semua field wajib harus diisi dengan angka yang valid.');
+                }
+                
+                if (totalStudents <= 0 || numGroups <= 0 || classSize <= 0) {
+                    throw new Error('Semua input nomor harus bernilai positif.');
+                }
+                
+                if (totalStudents < numGroups) {
+                    throw new Error('Jumlah total siswa harus lebih besar atau sama dengan jumlah kelompok.');
+                }
+                
+                // Process excluded numbers
+                let excludedNumbers = [];
+                if (excludedInput) {
+                    excludedNumbers = excludedInput.split(',').map(num => {
+                        const parsed = parseInt(num.trim());
+                        if (isNaN(parsed)) {
+                            throw new Error('Nomor yang dikecualikan harus berupa angka yang valid.');
+                        }
+                        return parsed;
+                    });
+                }
+                
+                // Check if we have enough available students
+                const availableStudents = classSize - excludedNumbers.length;
+                if (totalStudents > availableStudents) {
+                    throw new Error('Jumlah siswa yang ingin dibagi tidak dapat melebihi total siswa yang tersedia setelah penghilangan nomor.');
+                }
+                
+                // Generate available numbers
+                const availableNumbers = [];
+                for (let i = 1; i <= classSize; i++) {
+                    if (!excludedNumbers.includes(i)) {
+                        availableNumbers.push(i);
+                    }
+                }
+                
+                // Randomly select students
+                const selectedNumbers = [];
+                const tempAvailable = [...availableNumbers];
+                
+                for (let i = 0; i < totalStudents; i++) {
+                    const randomIndex = Math.floor(Math.random() * tempAvailable.length);
+                    selectedNumbers.push(tempAvailable.splice(randomIndex, 1)[0]);
+                }
+                
+                // Divide into groups
+                const groups = Array.from({ length: numGroups }, () => []);
+                selectedNumbers.forEach((num, index) => {
+                    groups[index % numGroups].push(num);
+                });
+                
+                // Sort each group
+                groups.forEach(group => group.sort((a, b) => a - b));
+                
+                // Display results
+                displayResults(groups);
+                
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+        
+        function displayResults(groups) {
+            const resultsSection = document.getElementById('resultsSection');
+            const groupsContainer = document.getElementById('groupsContainer');
+            
+            // Clear previous results
+            groupsContainer.innerHTML = '';
+            
+            // Create group cards
+            groups.forEach((group, index) => {
+                const groupCard = document.createElement('div');
+                groupCard.className = 'group-card bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4';
+                
+                groupCard.innerHTML = `
+                    <h3 class="font-semibold text-lg text-gray-800 mb-3 flex items-center">
+                        👥 Kelompok ${index + 1}
+                        <span class="ml-2 text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                            ${group.length} siswa
+                        </span>
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        ${group.map(num => `
+                            <span class="bg-white border border-gray-300 px-3 py-1 rounded-full text-sm font-medium text-gray-700">
+                                ${num}
+                            </span>
+                        `).join('')}
+                    </div>
+                `;
+                
+                groupsContainer.appendChild(groupCard);
+            });
+            
+            // Show results section
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = `Error: ${message}`;
+            errorDiv.classList.remove('hidden');
+            errorDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function resetForm() {
+            // Clear all inputs
+            document.getElementById('totalStudents').value = '';
+            document.getElementById('numGroups').value = '';
+            document.getElementById('classSize').value = '';
+            document.getElementById('excludedNumbers').value = '';
+            
+            // Hide results and errors
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Export to JPG function
+        function exportToJPG() {
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection.classList.contains('hidden')) {
+                showError('Tidak ada hasil untuk diekspor. Silakan bagi kelompok terlebih dahulu.');
+                return;
+            }
+
+            // Show loading message
+            const originalText = event.target.textContent;
+            event.target.textContent = '⏳ Mengekspor...';
+            event.target.disabled = true;
+
+            setTimeout(() => {
+                try {
+                    // Create a clean version for export
+                    const exportElement = createExportElement();
+                    document.body.appendChild(exportElement);
+
+                    html2canvas(exportElement, {
+                        backgroundColor: '#ffffff',
+                        scale: 1.5,
+                        logging: false,
+                        useCORS: true
+                    }).then(canvas => {
+                        // Remove the temporary element
+                        document.body.removeChild(exportElement);
+
+                        // Download the image
+                        const link = document.createElement('a');
+                        link.download = `pembagian-kelompok-${new Date().toISOString().split('T')[0]}.jpg`;
+                        link.href = canvas.toDataURL('image/jpeg', 0.95);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+
+                        // Reset button
+                        event.target.textContent = originalText;
+                        event.target.disabled = false;
+                    }).catch(error => {
+                        console.error('Export error:', error);
+                        showError('Gagal mengekspor ke JPG. Silakan coba lagi.');
+                        event.target.textContent = originalText;
+                        event.target.disabled = false;
+                    });
+
+                } catch (error) {
+                    console.error('Export error:', error);
+                    showError('Gagal mengekspor ke JPG. Silakan coba lagi.');
+                    event.target.textContent = originalText;
+                    event.target.disabled = false;
+                }
+            }, 100);
+        }
+
+        // Export to PDF function
+        function exportToPDF() {
+            const resultsSection = document.getElementById('resultsSection');
+            if (resultsSection.classList.contains('hidden')) {
+                showError('Tidak ada hasil untuk diekspor. Silakan bagi kelompok terlebih dahulu.');
+                return;
+            }
+
+            // Show loading message
+            const originalText = event.target.textContent;
+            event.target.textContent = '⏳ Mengekspor...';
+            event.target.disabled = true;
+
+            setTimeout(() => {
+                try {
+                    // Create a clean version for export
+                    const exportElement = createExportElement();
+                    document.body.appendChild(exportElement);
+
+                    html2canvas(exportElement, {
+                        backgroundColor: '#ffffff',
+                        scale: 1.5,
+                        logging: false,
+                        useCORS: true
+                    }).then(canvas => {
+                        // Remove the temporary element
+                        document.body.removeChild(exportElement);
+
+                        // Create PDF using jsPDF
+                        const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+                        
+                        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                        const imgWidth = 210; // A4 width in mm
+                        const pageHeight = 295; // A4 height in mm
+                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                        let heightLeft = imgHeight;
+
+                        let position = 0;
+
+                        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+
+                        while (heightLeft >= 0) {
+                            position = heightLeft - imgHeight;
+                            pdf.addPage();
+                            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                            heightLeft -= pageHeight;
+                        }
+
+                        pdf.save(`pembagian-kelompok-${new Date().toISOString().split('T')[0]}.pdf`);
+
+                        // Reset button
+                        event.target.textContent = originalText;
+                        event.target.disabled = false;
+                    }).catch(error => {
+                        console.error('Export error:', error);
+                        showError('Gagal mengekspor ke PDF. Silakan coba lagi.');
+                        event.target.textContent = originalText;
+                        event.target.disabled = false;
+                    });
+
+                } catch (error) {
+                    console.error('Export error:', error);
+                    showError('Gagal mengekspor ke PDF. Silakan coba lagi.');
+                    event.target.textContent = originalText;
+                    event.target.disabled = false;
+                }
+            }, 100);
+        }
+
+        // Create a clean export element
+        function createExportElement() {
+            const exportDiv = document.createElement('div');
+            exportDiv.style.position = 'absolute';
+            exportDiv.style.left = '-9999px';
+            exportDiv.style.top = '0';
+            exportDiv.style.backgroundColor = '#ffffff';
+            exportDiv.style.padding = '40px';
+            exportDiv.style.fontFamily = 'Inter, sans-serif';
+            exportDiv.style.width = '800px';
+
+            // Get current date
+            const currentDate = new Date().toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Get input values for the header
+            const totalStudents = document.getElementById('totalStudents').value;
+            const numGroups = document.getElementById('numGroups').value;
+            const classSize = document.getElementById('classSize').value;
+
+            exportDiv.innerHTML = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="font-size: 28px; font-weight: bold; color: #1f2937; margin-bottom: 10px;">
+                        🎲 Hasil Pembagian Kelompok Secara Acak by ACAKADIL
+                    </h1>
+                    <p style="color: #6b7280; font-size: 16px; margin-bottom: 5px;">
+                        Tanggal: ${currentDate}
+                    </p>
+                    <p style="color: #6b7280; font-size: 14px;">
+                        ${totalStudents} siswa dibagi menjadi ${numGroups} kelompok dari total ${classSize} siswa
+                    </p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    ${Array.from(document.querySelectorAll('#groupsContainer .group-card')).map((card, index) => {
+                        const groupNumbers = Array.from(card.querySelectorAll('span')).slice(1).map(span => span.textContent.trim());
+                        return `
+                            <div style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; background: #f9fafb;">
+                                <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 15px;">
+                                    👥 Kelompok ${index + 1} (${groupNumbers.length} siswa)
+                                </h3>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${groupNumbers.map(num => `
+                                        <span style="background: #ffffff; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 500; color: #374151;">
+                                            ${num}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                    <p style="color: #6b7280; font-size: 12px;">
+                        Dibuat dengan Aplikasi Pembagi Kelompok Secara Acak - WA: 085641051211<br>
+                        Link Aplikasi: <a href="https://dimasbn.azhiro.net/" target="_blank" style="color: #2563eb;">dimasbn.azhiro.net</a>
+                    </p>
+                </div>
+            `;
+
+            return exportDiv;
+        }
+
+        // Google Maps review function
+        function openGoogleReview() {
+            const reviewUrl = 'https://g.page/r/CRZT2jOWS46AEB0/review';
+            
+            // Try to open in new window first
+            const newWindow = window.open(reviewUrl, '_blank', 'noopener,noreferrer');
+            
+            // If popup blocked, show alternative
+            if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+                // Create a temporary link and click it
+                const link = document.createElement('a');
+                link.href = reviewUrl;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Show instruction if still blocked
+                setTimeout(() => {
+                    alert('Jika halaman review tidak terbuka, silakan copy link ini dan buka di tab baru:\n\n' + reviewUrl);
+                }, 1000);
+            }
+        }
+
+        // Allow Enter key to trigger group generation
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                generateGroups();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974f9b7603e6fce3',t:'MTc1NjE3MjI4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+
