@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -8,48 +9,272 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .card-shadow { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
-        .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .group-card { transition: all 0.3s ease; }
-        .group-card:hover { transform: translateY(-2px); }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-void: #05060a;
+            --bg-deep: #0a0e17;
+            --panel: rgba(16, 21, 34, 0.72);
+            --panel-solid: #0d1220;
+            --line: rgba(120, 160, 255, 0.14);
+            --line-strong: rgba(120, 200, 255, 0.35);
+            --cyan: #22d3ee;
+            --violet: #a78bfa;
+            --magenta: #f472b6;
+            --text-hi: #e7ecfb;
+            --text-mid: #9aa5c3;
+            --text-low: #5c6685;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-void);
+            color: var(--text-hi);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Slow-drifting ambient light orbs — subtle, low-amplitude motion */
+        .bg-orbs {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            will-change: transform, opacity;
+        }
+        .bg-orb-1 {
+            width: 46vw; height: 46vw;
+            top: -14vw; left: -8vw;
+            background: radial-gradient(circle, rgba(167,139,250,0.22), transparent 70%);
+            animation: drift1 26s ease-in-out infinite alternate;
+        }
+        .bg-orb-2 {
+            width: 40vw; height: 40vw;
+            top: -6vw; right: -10vw;
+            background: radial-gradient(circle, rgba(34,211,238,0.18), transparent 70%);
+            animation: drift2 32s ease-in-out infinite alternate;
+        }
+        .bg-orb-3 {
+            width: 42vw; height: 42vw;
+            bottom: -16vw; left: 24vw;
+            background: radial-gradient(circle, rgba(244,114,182,0.14), transparent 70%);
+            animation: drift3 38s ease-in-out infinite alternate;
+        }
+
+        @keyframes drift1 {
+            0%   { transform: translate(0, 0) scale(1); opacity: 0.9; }
+            100% { transform: translate(3vw, 4vw) scale(1.08); opacity: 1; }
+        }
+        @keyframes drift2 {
+            0%   { transform: translate(0, 0) scale(1); opacity: 0.85; }
+            100% { transform: translate(-4vw, 3vw) scale(0.95); opacity: 1; }
+        }
+        @keyframes drift3 {
+            0%   { transform: translate(0, 0) scale(1); opacity: 0.8; }
+            100% { transform: translate(2vw, -3vw) scale(1.06); opacity: 0.95; }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: -42px;
+            background-image:
+                linear-gradient(rgba(120,160,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(120,160,255,0.05) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black, transparent 75%);
+            pointer-events: none;
+            z-index: 0;
+            animation: gridDrift 70s linear infinite;
+        }
+
+        @keyframes gridDrift {
+            0%   { background-position: 0 0, 0 0; }
+            100% { background-position: 42px 42px, 42px 42px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .bg-orb, body::before { animation: none !important; }
+        }
+
+        .font-display { font-family: 'Orbitron', sans-serif; }
+
+        .glass-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.02) inset, 0 20px 60px -20px rgba(0,0,0,0.6);
+            position: relative;
+        }
+
+        .glow-border-top::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--cyan), var(--violet), var(--magenta), transparent);
+            opacity: 0.7;
+        }
+
+        .title-glow {
+            background: linear-gradient(90deg, var(--cyan), var(--violet) 55%, var(--magenta));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 0 24px rgba(139, 165, 255, 0.35));
+        }
+
+        .pulse-dot {
+            box-shadow: 0 0 0 0 rgba(34,211,238, 0.6);
+            animation: pulse-dot 2.4s infinite;
+        }
+        @keyframes pulse-dot {
+            0% { box-shadow: 0 0 0 0 rgba(34,211,238,0.55); }
+            70% { box-shadow: 0 0 0 10px rgba(34,211,238,0); }
+            100% { box-shadow: 0 0 0 0 rgba(34,211,238,0); }
+        }
+
+        .animate-fade-in { animation: fadeIn 0.6s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+        .group-card { transition: all 0.25s ease; }
+        .group-card:hover { transform: translateY(-3px); border-color: var(--line-strong); box-shadow: 0 0 30px -10px rgba(34,211,238,0.25); }
+
+        .input-dark {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--line);
+            color: var(--text-hi);
+            transition: all 0.2s ease;
+        }
+        .input-dark::placeholder { color: #4b5573; }
+        .input-dark:focus {
+            outline: none;
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(34,211,238,0.15), 0 0 20px -5px rgba(34,211,238,0.4);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #0891b2, #7c3aed);
+            box-shadow: 0 0 25px -5px rgba(124,58,237,0.6);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 40px -5px rgba(34,211,238,0.75);
+        }
+
+        .badge-chip {
+            background: rgba(34,211,238,0.08);
+            border: 1px solid rgba(34,211,238,0.35);
+            color: #67e8f9;
+        }
+
+        .result-chip {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--line);
+            color: var(--text-hi);
+        }
+
+        /* Number picker grid */
+        .num-btn {
+            width: 2.6rem;
+            height: 2.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Orbitron', sans-serif;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--line);
+            color: var(--text-mid);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        .num-btn:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+            box-shadow: 0 0 12px -2px rgba(34,211,238,0.5);
+            transform: translateY(-1px);
+        }
+        .num-btn-active {
+            background: linear-gradient(135deg, #fb7185, #ec4899);
+            border-color: #fb7185;
+            color: #fff5f7;
+            text-decoration: line-through;
+            text-decoration-thickness: 2px;
+            box-shadow: 0 0 16px -2px rgba(251,113,133,0.65);
+        }
+        .num-btn-active:hover {
+            box-shadow: 0 0 18px -2px rgba(251,113,133,0.85);
+        }
+
+        #excludedNumbersGrid {
+            max-height: 220px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(120,160,255,0.3) transparent;
+        }
+        #excludedNumbersGrid::-webkit-scrollbar { width: 6px; }
+        #excludedNumbersGrid::-webkit-scrollbar-thumb { background: rgba(120,160,255,0.3); border-radius: 10px; }
+
+        ::selection { background: rgba(167,139,250,0.35); }
     </style>
 </head>
-<body class="gradient-bg min-h-screen py-6 px-4">
-    <div class="max-w-4xl mx-auto">
+<body class="min-h-screen py-6 px-4">
+    <div class="bg-orbs" aria-hidden="true">
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+    </div>
+    <div class="max-w-4xl mx-auto relative" style="z-index: 1;">
         <!-- Header -->
         <div class="text-center mb-8 animate-fade-in">
-            <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                🎲 ACAKADIL | Aplikasi Pembagi Kelompok Secara Acak 
+            <div class="inline-flex items-center gap-2 mb-3 px-3 py-1 rounded-full badge-chip text-xs font-medium">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 pulse-dot"></span>
+                SISTEM PEMBAGIAN ACAK · ONLINE
+            </div>
+            <h1 class="font-display text-3xl md:text-5xl font-bold title-glow mb-4 tracking-tight">
+                ACAKADIL
             </h1>
-            <p class="text-white/90 text-lg">Dibuat dari Python, dikonversi ke HTML, CSS, & JavaScript dengan sentuhan AI</p> 
+            <p class="text-[var(--text-mid)] text-base md:text-lg">
+                🎲 Aplikasi Pembagi Kelompok Secara Acak — dari Python, ditulis ulang ke HTML/CSS/JS dengan sentuhan AI
+            </p>
         </div>
 
         <!-- Main Card -->
-        <div class="bg-white rounded-2xl card-shadow p-6 md:p-8 mb-6 animate-fade-in">
+        <div class="glass-card glow-border-top rounded-2xl p-6 md:p-8 mb-6 animate-fade-in">
             <!-- Description Section -->
             <div class="mb-8">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
-                    📋 Deskripsi
+                <h2 class="text-xl md:text-2xl font-semibold text-[var(--text-hi)] mb-4 flex items-center gap-2 font-display">
+                    📋 <span>Deskripsi</span>
                 </h2>
-                <p class="text-gray-600 leading-relaxed">
-                    Aplikasi Gratis ini berfungsi untuk mengelompokkan siswa berdasarkan nomor presensi, secara acak dan merata sesuai dengan jumlah pembagian kelompok yang dikehendaki tanpa terduplikasi. Dan jika ada siswa yang ingin dihilangkan atau tidak ingin dimasukkan ke dalam pembagian kelompok ini, maka hal ini juga bisa dilakukan dengan cara mengisikan nomor-nomor presensi yang ingin dihilangkan.
+                <p class="text-[var(--text-mid)] leading-relaxed">
+                    Aplikasi Gratis ini berfungsi untuk mengelompokkan siswa berdasarkan nomor presensi, secara acak dan merata sesuai dengan jumlah pembagian kelompok yang dikehendaki tanpa terduplikasi. Jika ada siswa yang ingin dihilangkan atau tidak ingin dimasukkan ke dalam pembagian kelompok ini, tinggal klik nomor presensinya pada daftar tombol di bawah.
                 </p>
             </div>
 
             <!-- Instructions Section -->
             <div class="mb-8">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
-                    📝 Cara Pakai
+                <h2 class="text-xl md:text-2xl font-semibold text-[var(--text-hi)] mb-4 flex items-center gap-2 font-display">
+                    📝 <span>Cara Pakai</span>
                 </h2>
-                <ol class="text-gray-600 space-y-2 list-decimal list-inside">
+                <ol class="text-[var(--text-mid)] space-y-2 list-decimal list-inside">
                     <li>Masukkan jumlah siswa yang ingin dimasukkan dalam pembagian kelompok ini (jumlah real siswa saat ini)</li>
                     <li>Anda ingin membaginya menjadi berapa kelompok? Masukkan angkanya</li>
                     <li>Masukkan jumlah total siswa dalam 1 kelas sesuai daftar presensi (jumlah keseluruhan siswa dalam 1 kelas)</li>
-                    <li>Nomor presensi yang ingin dihilangkan (opsional), dipisahkan dengan koma (contoh: 3,15,27)</li>
+                    <li>Nomor presensi yang ingin dihilangkan (opsional): klik saja tombol nomornya pada daftar yang muncul. Jika tidak ada, lewati saja</li>
                     <li>Klik tombol "Bagi Kelompok Secara Acak" untuk melihat hasilnya</li>
                 </ol>
             </div>
@@ -58,83 +283,98 @@
             <div class="space-y-6">
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <label class="block text-sm font-medium text-[var(--text-mid)] mb-2">
                             Jumlah siswa yang hadir, atau yang ada saat ini
                         </label>
-                        <input type="number" id="totalStudents" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        <input type="number" id="totalStudents"
+                               class="input-dark w-full px-4 py-3 rounded-lg"
                                placeholder="Contoh: 32" min="1">
                     </div>
-                    
+
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <label class="block text-sm font-medium text-[var(--text-mid)] mb-2">
                             Jumlah kelompok yang diinginkan
                         </label>
-                        <input type="number" id="numGroups" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        <input type="number" id="numGroups"
+                               class="input-dark w-full px-4 py-3 rounded-lg"
                                placeholder="Contoh: 5" min="1">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <label class="block text-sm font-medium text-[var(--text-mid)] mb-2">
                         Total keseluruhan siswa dalam 1 kelas (sesuai daftar presensi, termasuk yang tidak hadir)
                     </label>
-                    <input type="number" id="classSize" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    <input type="number" id="classSize"
+                           class="input-dark w-full px-4 py-3 rounded-lg"
                            placeholder="Contoh: 36" min="1">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Nomor absen atau presensi yang ingin dihilangkan (opsional), jika tidak ada, bisa di lewati
-                    </label>
-                    <input type="text" id="excludedNumbers" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                           placeholder="Contoh: 3,15,27 (kosongkan jika tidak ada)">
-                    <p class="text-sm text-gray-500 mt-1">Pisahkan dengan koma jika lebih dari satu nomor</p>
+                    <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                        <label class="block text-sm font-medium text-[var(--text-mid)]">
+                            Nomor absen/presensi yang ingin dihilangkan (opsional)
+                        </label>
+                        <button type="button" onclick="clearExcluded()"
+                                class="text-xs px-2.5 py-1 rounded-md border border-[var(--line)] text-[var(--text-mid)] hover:border-[var(--cyan)] hover:text-[var(--cyan)] transition-all">
+                            🧹 Bersihkan Pilihan
+                        </button>
+                    </div>
+                    <p class="text-xs text-[var(--text-mid)] mb-3">
+                        Klik nomor yang ingin dihilangkan. Jika tidak ada, biarkan saja / lewati.
+                        Daftar nomor otomatis menyesuaikan dengan "Total keseluruhan siswa dalam 1 kelas" di atas.
+                    </p>
+                    <div id="excludedNumbersGrid" class="glass-card rounded-lg p-3 flex flex-wrap gap-2">
+                        <!-- number buttons injected by JS -->
+                    </div>
+                    <p id="excludedSummary" class="text-sm mt-2 text-[var(--text-mid)]">
+                        Belum ada nomor yang dihilangkan.
+                    </p>
                 </div>
 
-                <button onclick="generateGroups()" 
-                        class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-4 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg">
-                    🎯 Bagi Kelompok Secara Acak
+                <button onclick="generateGroups()"
+                        class="btn-primary w-full text-white font-semibold py-4 px-6 rounded-lg transform hover:scale-[1.02] transition-all duration-200 font-display tracking-wide">
+                    🎯 BAGI KELOMPOK SECARA ACAK
                 </button>
             </div>
 
             <!-- Error Message -->
-            <div id="errorMessage" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            <div id="errorMessage" class="hidden mt-4 p-4 rounded-lg" style="background: rgba(244,63,94,0.08); border: 1px solid rgba(244,63,94,0.4); color: #fda4af;">
             </div>
         </div>
 
         <!-- Results Section -->
-        <div id="resultsSection" class="hidden bg-white rounded-2xl card-shadow p-6 md:p-8 animate-fade-in">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
-                🎉 Hasil Pembagian Kelompok Secara Acak
+        <div id="resultsSection" class="hidden glass-card glow-border-top rounded-2xl p-6 md:p-8 mb-6 animate-fade-in">
+            <h2 class="text-xl md:text-2xl font-semibold text-[var(--text-hi)] mb-6 flex items-center gap-2 font-display">
+                🎉 <span>Hasil Pembagian Kelompok Secara Acak</span>
             </h2>
             <div id="groupsContainer" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             </div>
-            
+
             <div class="mt-6 text-center space-y-4">
                 <div class="flex flex-wrap justify-center gap-3">
-                    <button onclick="generateGroups()" 
-                            class="bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 transition-all duration-200">
+                    <button onclick="generateGroups()"
+                            class="text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200"
+                            style="background: linear-gradient(90deg,#10b981,#22d3ee); box-shadow: 0 0 20px -5px rgba(16,185,129,0.6);">
                         🔄 Acak Ulang
                     </button>
-                    <button onclick="resetForm()" 
-                            class="bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-gray-700 transition-all duration-200">
+                    <button onclick="resetForm()"
+                            class="text-[var(--text-hi)] font-semibold py-3 px-6 rounded-lg border border-[var(--line)] hover:border-[var(--cyan)] transition-all duration-200">
                         ↩️ Reset Form
                     </button>
                 </div>
-                
-                <div class="border-t pt-4">
-                    <p class="text-sm text-gray-600 mb-3">📤 Ekspor Hasil:</p>
+
+                <div class="border-t border-[var(--line)] pt-4">
+                    <p class="text-sm text-[var(--text-mid)] mb-3">📤 Ekspor Hasil:</p>
                     <div class="flex flex-wrap justify-center gap-3">
-                        <button onclick="exportToJPG()" 
-                                class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-all duration-200 text-sm">
+                        <button onclick="exportToJPG()"
+                                class="text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 text-sm"
+                                style="background: linear-gradient(90deg,#0891b2,#22d3ee); box-shadow: 0 0 16px -5px rgba(34,211,238,0.6);">
                             📷 Ekspor ke JPG
                         </button>
-                        <button onclick="exportToPDF()" 
-                                class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-all duration-200 text-sm">
+                        <button onclick="exportToPDF()"
+                                class="text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 text-sm"
+                                style="background: linear-gradient(90deg,#e11d48,#f472b6); box-shadow: 0 0 16px -5px rgba(244,114,182,0.6);">
                             📄 Ekspor ke PDF
                         </button>
                     </div>
@@ -143,24 +383,25 @@
         </div>
 
         <!-- Review Section -->
-        <div class="bg-white rounded-2xl card-shadow p-6 md:p-8 mb-6 text-center animate-fade-in">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center justify-center">
-                ⭐ Suka dengan Aplikasi Ini?
+        <div class="glass-card rounded-2xl p-6 md:p-8 mb-6 text-center animate-fade-in">
+            <h3 class="text-lg md:text-xl font-semibold text-[var(--text-hi)] mb-4 flex items-center justify-center gap-2 font-display">
+                ⭐ <span>Suka dengan Aplikasi Ini?</span>
             </h3>
-            <p class="text-gray-600 mb-6">
+            <p class="text-[var(--text-mid)] mb-6">
                 Bantu kami dengan memberikan review Bintang 5 di Google Maps! Review Anda sangat berarti untuk pengembangan aplikasi ini, dan aplikasi-aplikasi gratis lainnya di masa depan.
             </p>
-            <button onclick="openGoogleReview()" 
-                    class="inline-flex items-center bg-gradient-to-b from-yellow-500 to-orange-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-yellow-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 shadow-lg">
+            <button onclick="openGoogleReview()"
+                    class="inline-flex items-center text-white font-semibold py-3 px-6 rounded-lg transform hover:scale-105 transition-all duration-200"
+                    style="background: linear-gradient(90deg,#f59e0b,#f472b6); box-shadow: 0 0 24px -5px rgba(245,158,11,0.5);">
                 🌟 Berikan Review di Google Maps
             </button>
         </div>
 
         <!-- Footer -->
-        <div class="text-center mt-8 text-white/80">
+        <div class="text-center mt-8 text-[var(--text-mid)]">
             <p class="text-sm">
-                Jika mengalami error atau ada pertanyaan, silakan hubungi nomor WA 
-                <a href="https://wa.me/6285641051211" class="text-white font-semibold hover:underline" target="_blank">
+                Jika mengalami error atau ada pertanyaan, silakan hubungi nomor WA
+                <a href="https://wa.me/6285641051211" class="text-[var(--cyan)] font-semibold hover:underline" target="_blank">
                     085641051211 (Dimas BN / Azhiro)
                 </a>
             </p>
@@ -168,49 +409,106 @@
     </div>
 
     <script>
+        // ===== Excluded numbers picker state =====
+        let excludedSet = new Set();
+        let currentGridSize = 36;
+
+        function renderNumberGrid(size) {
+            size = Math.max(1, Math.min(1000, parseInt(size) || 36));
+            currentGridSize = size;
+
+            // Drop any excluded numbers that fall outside the new range
+            Array.from(excludedSet).forEach(n => { if (n > size) excludedSet.delete(n); });
+
+            const grid = document.getElementById('excludedNumbersGrid');
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= size; i++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = i;
+                btn.className = 'num-btn' + (excludedSet.has(i) ? ' num-btn-active' : '');
+                btn.addEventListener('click', () => toggleExcluded(i, btn));
+                grid.appendChild(btn);
+            }
+
+            updateExcludedSummary();
+        }
+
+        function toggleExcluded(n, btn) {
+            if (excludedSet.has(n)) {
+                excludedSet.delete(n);
+                btn.classList.remove('num-btn-active');
+            } else {
+                excludedSet.add(n);
+                btn.classList.add('num-btn-active');
+            }
+            updateExcludedSummary();
+        }
+
+        function clearExcluded() {
+            excludedSet.clear();
+            document.querySelectorAll('#excludedNumbersGrid .num-btn').forEach(btn => {
+                btn.classList.remove('num-btn-active');
+            });
+            updateExcludedSummary();
+        }
+
+        function updateExcludedSummary() {
+            const summary = document.getElementById('excludedSummary');
+            if (excludedSet.size === 0) {
+                summary.textContent = 'Belum ada nomor yang dihilangkan.';
+            } else {
+                const sorted = Array.from(excludedSet).sort((a, b) => a - b);
+                summary.textContent = `Nomor dihilangkan (${sorted.length}): ${sorted.join(', ')}`;
+            }
+        }
+
+        // Keep the number grid in sync with the class size field
+        document.getElementById('classSize').addEventListener('input', function () {
+            const val = parseInt(this.value);
+            if (!isNaN(val) && val > 0) {
+                renderNumberGrid(val);
+            }
+        });
+
+        // Initial grid render (default 36, matching the example placeholder)
+        renderNumberGrid(36);
+
+        // ===== Core logic =====
         function generateGroups() {
             // Clear previous error messages
             const errorDiv = document.getElementById('errorMessage');
             errorDiv.classList.add('hidden');
-            
+
             try {
                 // Get input values
                 const totalStudents = parseInt(document.getElementById('totalStudents').value);
                 const numGroups = parseInt(document.getElementById('numGroups').value);
                 const classSize = parseInt(document.getElementById('classSize').value);
-                const excludedInput = document.getElementById('excludedNumbers').value.trim();
-                
+
                 // Validate inputs
                 if (!totalStudents || !numGroups || !classSize) {
                     throw new Error('Semua field wajib harus diisi dengan angka yang valid.');
                 }
-                
+
                 if (totalStudents <= 0 || numGroups <= 0 || classSize <= 0) {
                     throw new Error('Semua input nomor harus bernilai positif.');
                 }
-                
+
                 if (totalStudents < numGroups) {
                     throw new Error('Jumlah total siswa harus lebih besar atau sama dengan jumlah kelompok.');
                 }
-                
-                // Process excluded numbers
-                let excludedNumbers = [];
-                if (excludedInput) {
-                    excludedNumbers = excludedInput.split(',').map(num => {
-                        const parsed = parseInt(num.trim());
-                        if (isNaN(parsed)) {
-                            throw new Error('Nomor yang dikecualikan harus berupa angka yang valid.');
-                        }
-                        return parsed;
-                    });
-                }
-                
+
+                // Excluded numbers now come from the button picker
+                const excludedNumbers = Array.from(excludedSet);
+
                 // Check if we have enough available students
                 const availableStudents = classSize - excludedNumbers.length;
                 if (totalStudents > availableStudents) {
                     throw new Error('Jumlah siswa yang ingin dibagi tidak dapat melebihi total siswa yang tersedia setelah penghilangan nomor.');
                 }
-                
+
                 // Generate available numbers
                 const availableNumbers = [];
                 for (let i = 1; i <= classSize; i++) {
@@ -218,91 +516,94 @@
                         availableNumbers.push(i);
                     }
                 }
-                
+
                 // Randomly select students
                 const selectedNumbers = [];
                 const tempAvailable = [...availableNumbers];
-                
+
                 for (let i = 0; i < totalStudents; i++) {
                     const randomIndex = Math.floor(Math.random() * tempAvailable.length);
                     selectedNumbers.push(tempAvailable.splice(randomIndex, 1)[0]);
                 }
-                
+
                 // Divide into groups
                 const groups = Array.from({ length: numGroups }, () => []);
                 selectedNumbers.forEach((num, index) => {
                     groups[index % numGroups].push(num);
                 });
-                
+
                 // Sort each group
                 groups.forEach(group => group.sort((a, b) => a - b));
-                
+
                 // Display results
                 displayResults(groups);
-                
+
             } catch (error) {
                 showError(error.message);
             }
         }
-        
+
         function displayResults(groups) {
             const resultsSection = document.getElementById('resultsSection');
             const groupsContainer = document.getElementById('groupsContainer');
-            
+
             // Clear previous results
             groupsContainer.innerHTML = '';
-            
+
             // Create group cards
             groups.forEach((group, index) => {
                 const groupCard = document.createElement('div');
-                groupCard.className = 'group-card bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4';
-                
+                groupCard.className = 'group-card glass-card rounded-lg p-4';
+
                 groupCard.innerHTML = `
-                    <h3 class="font-semibold text-lg text-gray-800 mb-3 flex items-center">
+                    <h3 class="font-semibold text-lg text-[var(--text-hi)] mb-3 flex items-center font-display">
                         👥 Kelompok ${index + 1}
-                        <span class="ml-2 text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                        <span class="ml-2 text-xs badge-chip px-2 py-1 rounded-full font-sans font-medium">
                             ${group.length} siswa
                         </span>
                     </h3>
                     <div class="flex flex-wrap gap-2">
                         ${group.map(num => `
-                            <span class="bg-white border border-gray-300 px-3 py-1 rounded-full text-sm font-medium text-gray-700">
+                            <span class="result-chip px-3 py-1 rounded-full text-sm font-medium">
                                 ${num}
                             </span>
                         `).join('')}
                     </div>
                 `;
-                
+
                 groupsContainer.appendChild(groupCard);
             });
-            
+
             // Show results section
             resultsSection.classList.remove('hidden');
             resultsSection.scrollIntoView({ behavior: 'smooth' });
         }
-        
+
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
             errorDiv.textContent = `Error: ${message}`;
             errorDiv.classList.remove('hidden');
             errorDiv.scrollIntoView({ behavior: 'smooth' });
         }
-        
+
         function resetForm() {
             // Clear all inputs
             document.getElementById('totalStudents').value = '';
             document.getElementById('numGroups').value = '';
             document.getElementById('classSize').value = '';
-            document.getElementById('excludedNumbers').value = '';
-            
+
+            // Reset the excluded-numbers picker back to default
+            clearExcluded();
+            renderNumberGrid(36);
+
             // Hide results and errors
             document.getElementById('resultsSection').classList.add('hidden');
             document.getElementById('errorMessage').classList.add('hidden');
-            
+
             // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
+
         // Export to JPG function
         function exportToJPG() {
             const resultsSection = document.getElementById('resultsSection');
@@ -388,7 +689,7 @@
 
                         // Create PDF using jsPDF
                         const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
-                        
+
                         const imgData = canvas.toDataURL('image/jpeg', 0.95);
                         const imgWidth = 210; // A4 width in mm
                         const pageHeight = 295; // A4 height in mm
@@ -428,7 +729,7 @@
             }, 100);
         }
 
-        // Create a clean export element
+        // Create a clean export element (kept light/print-friendly for JPG & PDF output)
         function createExportElement() {
             const exportDiv = document.createElement('div');
             exportDiv.style.position = 'absolute';
@@ -464,7 +765,7 @@
                         ${totalStudents} siswa dibagi menjadi ${numGroups} kelompok dari total ${classSize} siswa
                     </p>
                 </div>
-                
+
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
                     ${Array.from(document.querySelectorAll('#groupsContainer .group-card')).map((card, index) => {
                         const groupNumbers = Array.from(card.querySelectorAll('span')).slice(1).map(span => span.textContent.trim());
@@ -484,7 +785,7 @@
                         `;
                     }).join('')}
                 </div>
-                
+
                 <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
                     <p style="color: #6b7280; font-size: 12px;">
                         Dibuat dengan Aplikasi Pembagi Kelompok Secara Acak - WA: 085641051211<br>
@@ -499,10 +800,10 @@
         // Google Maps review function
         function openGoogleReview() {
             const reviewUrl = 'https://g.page/r/CRZT2jOWS46AEB0/review';
-            
+
             // Try to open in new window first
             const newWindow = window.open(reviewUrl, '_blank', 'noopener,noreferrer');
-            
+
             // If popup blocked, show alternative
             if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
                 // Create a temporary link and click it
@@ -513,7 +814,7 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                
+
                 // Show instruction if still blocked
                 setTimeout(() => {
                     alert('Jika halaman review tidak terbuka, silakan copy link ini dan buka di tab baru:\n\n' + reviewUrl);
@@ -521,13 +822,12 @@
             }
         }
 
-        // Allow Enter key to trigger group generation
+        // Allow Enter key to trigger group generation (but not while picking numbers)
         document.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && event.target.tagName !== 'BUTTON') {
                 generateGroups();
             }
         });
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974f9b7603e6fce3',t:'MTc1NjE3MjI4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
