@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -261,6 +262,21 @@
                     </label>
                     <div id="nameImportContainer" class="hidden mt-3">
                         <p class="text-xs text-[var(--text-mid)] mb-2">
+                            Ada dua cara mengisi nama: unggah file Excel/CSV untuk mengisi otomatis, atau tempel manual di kotak teks di bawah.
+                        </p>
+
+                        <div class="flex flex-wrap items-center gap-3 mb-2">
+                            <label class="btn-outline inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer">
+                                📁 Unggah Excel/CSV
+                                <input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleExcelFile(event)">
+                            </label>
+                            <span id="excelFileName" class="text-xs text-[var(--text-mid)]"></span>
+                        </div>
+                        <p class="text-xs text-[var(--text-mid)] mb-3">
+                            Format yang didukung: kolom "No/Nomor Absen" + "Nama" (urutan kolom bebas), atau cukup satu kolom berisi nama saja (akan diurutkan otomatis sesuai baris = No. Absen 1, 2, 3, dst).
+                        </p>
+
+                        <p class="text-xs text-[var(--text-mid)] mb-2">
                             Tempel daftar nama, satu nama per baris. Baris ke-1 = No. Absen 1, baris ke-2 = No. Absen 2, dan seterusnya, mengikuti "Total keseluruhan siswa dalam 1 kelas" di atas.
                         </p>
                         <textarea id="studentNamesInput" rows="6" oninput="updateNameImportSummary()"
@@ -406,6 +422,128 @@
             lines.forEach((name, idx) => {
                 studentNames[idx + 1] = name;
             });
+        }
+
+        // ===== Excel / CSV import for names =====
+        function handleExcelFile(event) {
+            const file = event.target.files[0];
+            const fileNameLabel = document.getElementById('excelFileName');
+            if (!file) return;
+
+            if (typeof XLSX === 'undefined') {
+                showError('Gagal memuat pustaka pembaca Excel/CSV. Periksa koneksi internet Anda lalu coba lagi.');
+                return;
+            }
+
+            fileNameLabel.textContent = `⏳ Membaca "${file.name}"...`;
+
+            const isCSV = /\.csv$/i.test(file.name);
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                try {
+                    const workbook = isCSV
+                        ? XLSX.read(e.target.result, { type: 'string' })
+                        : XLSX.read(e.target.result, { type: 'array' });
+
+                    const firstSheetName = workbook.SheetNames[0];
+                    const sheet = workbook.Sheets[firstSheetName];
+                    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: false });
+
+                    const importedCount = processExcelRows(rows);
+                    fileNameLabel.textContent = `✅ "${file.name}" — ${importedCount} nama berhasil diimpor`;
+                } catch (err) {
+                    console.error('Excel/CSV import error:', err);
+                    fileNameLabel.textContent = '';
+                    showError('Gagal membaca file. Pastikan formatnya Excel (.xlsx/.xls) atau CSV (.csv) yang valid.');
+                }
+            };
+
+            reader.onerror = function () {
+                fileNameLabel.textContent = '';
+                showError('Gagal membaca file. Silakan coba lagi.');
+            };
+
+            if (isCSV) {
+                reader.readAsText(file);
+            } else {
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        // Turns raw spreadsheet rows into a { nomorAbsen: nama } map,
+        // then writes the result into the textarea so it stays the single source of truth.
+        function processExcelRows(rows) {
+            rows = rows.filter(r => Array.isArray(r) && r.some(cell => String(cell).trim() !== ''));
+            if (rows.length === 0) {
+                throw new Error('File tidak berisi data yang bisa dibaca.');
+            }
+
+            // Try to detect header row with "No/Nomor/Absen" and "Nama" columns
+            let nomorCol = -1;
+            let namaCol = -1;
+            const headerRow = rows[0].map(c => String(c).trim().toLowerCase());
+            headerRow.forEach((cell, idx) => {
+                if (nomorCol === -1 && /^(no\.?|nomor|absen|no\s*absen|no\s*urut)/.test(cell)) nomorCol = idx;
+                if (namaCol === -1 && /nama/.test(cell)) namaCol = idx;
+            });
+
+            const hasHeader = nomorCol !== -1 || namaCol !== -1;
+            let dataRows = hasHeader ? rows.slice(1) : rows;
+
+            if (!hasHeader) {
+                // No recognizable header: guess layout from the data itself
+                if (rows[0].length >= 2) {
+                    nomorCol = 0;
+                    namaCol = 1;
+                } else {
+                    nomorCol = -1;
+                    namaCol = 0;
+                }
+            } else if (namaCol === -1) {
+                // Header had a number-like column but no "Nama" column — fall back to next column
+                namaCol = nomorCol === 0 ? 1 : 0;
+            }
+
+            const parsedNames = {};
+
+            if (nomorCol !== -1 && namaCol !== -1 && nomorCol !== namaCol) {
+                // Explicit nomor + nama columns
+                dataRows.forEach(row => {
+                    const namaRaw = String(row[namaCol] || '').trim();
+                    const nomorRaw = String(row[nomorCol] || '').trim();
+                    const nomor = parseInt(nomorRaw);
+                    if (namaRaw && !isNaN(nomor) && nomor > 0) {
+                        parsedNames[nomor] = namaRaw;
+                    }
+                });
+            } else {
+                // Single column of names — number them sequentially by row order
+                let seq = 1;
+                dataRows.forEach(row => {
+                    const namaRaw = String(row[namaCol] || '').trim();
+                    if (namaRaw) {
+                        parsedNames[seq] = namaRaw;
+                        seq++;
+                    }
+                });
+            }
+
+            const nomorKeys = Object.keys(parsedNames).map(Number);
+            if (nomorKeys.length === 0) {
+                throw new Error('Tidak ada nama yang berhasil dikenali dari file tersebut.');
+            }
+            const maxNomor = Math.max(...nomorKeys);
+
+            // Rebuild the textarea (line N = No. Absen N) so it stays editable and consistent
+            const lines = [];
+            for (let i = 1; i <= maxNomor; i++) {
+                lines.push(parsedNames[i] || '');
+            }
+            document.getElementById('studentNamesInput').value = lines.join('\n');
+            updateNameImportSummary();
+
+            return nomorKeys.length;
         }
 
         // ===== Excluded numbers picker state =====
@@ -599,6 +737,8 @@
             document.getElementById('nameImportContainer').classList.add('hidden');
             document.getElementById('studentNamesInput').value = '';
             document.getElementById('nameImportSummary').textContent = 'Belum ada nama diisi.';
+            document.getElementById('excelFileInput').value = '';
+            document.getElementById('excelFileName').textContent = '';
             studentNames = {};
 
             // Reset the excluded-numbers picker back to default
