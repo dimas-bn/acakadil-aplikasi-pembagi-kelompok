@@ -5,6 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ACAKADIL - Aplikasi Pembagi Kelompok Secara Acak</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#05060a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ACAKADIL">
+    <meta name="description" content="Aplikasi gratis untuk mengelompokkan siswa secara acak dan merata sesuai jumlah kelompok yang diinginkan, tanpa duplikasi.">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
@@ -383,6 +396,30 @@
                     085641051211 (Dimas BN / Azhiro)
                 </a>
             </p>
+        </div>
+    </div>
+
+    <!-- PWA Install Banner -->
+    <div id="installBanner" class="hidden fixed left-4 right-4 md:left-auto md:right-6 md:w-96 z-50" style="bottom: 16px;">
+        <div class="glass-card glow-border-top rounded-2xl p-4 flex items-start gap-3" style="box-shadow: 0 20px 50px -15px rgba(0,0,0,0.7);">
+            <div class="text-3xl leading-none">🎲</div>
+            <div class="flex-1 min-w-0">
+                <p class="font-display text-sm font-bold text-[var(--text-hi)] mb-1">Install ACAKADIL</p>
+                <p id="installBannerText" class="text-xs text-[var(--text-mid)] mb-3">
+                    Pasang aplikasi ini di perangkatmu untuk akses lebih cepat, tampilan layar penuh, dan tetap bisa dibuka walau koneksi lemah.
+                </p>
+                <div class="flex flex-wrap gap-2">
+                    <button id="installBannerActionBtn" onclick="handleInstallClick()"
+                            class="btn-primary text-white text-xs font-semibold py-2 px-4 rounded-lg">
+                        📲 Install Sekarang
+                    </button>
+                    <button onclick="dismissInstallBanner()"
+                            class="text-xs font-semibold py-2 px-4 rounded-lg border border-[var(--line)] text-[var(--text-mid)] hover:border-[var(--cyan)] hover:text-[var(--cyan)] transition-all">
+                        Nanti Saja
+                    </button>
+                </div>
+            </div>
+            <button onclick="dismissInstallBanner()" class="text-[var(--text-mid)] hover:text-[var(--text-hi)] text-lg leading-none flex-shrink-0" aria-label="Tutup notifikasi install">×</button>
         </div>
     </div>
 
@@ -977,6 +1014,96 @@
                 generateGroups();
             }
         });
+
+        // ===== PWA: install prompt banner =====
+        let deferredInstallPrompt = null;
+        const INSTALL_DISMISS_KEY = 'acakadilInstallDismissedUntil';
+
+        function isStandaloneDisplay() {
+            return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        }
+
+        function wasInstallBannerRecentlyDismissed() {
+            try {
+                const until = localStorage.getItem(INSTALL_DISMISS_KEY);
+                return !!until && Date.now() < parseInt(until, 10);
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function dismissInstallBanner() {
+            document.getElementById('installBanner').classList.add('hidden');
+            try {
+                localStorage.setItem(INSTALL_DISMISS_KEY, String(Date.now() + 7 * 24 * 60 * 60 * 1000));
+            } catch (e) {
+                // ignore if storage is unavailable
+            }
+        }
+
+        function showInstallBanner(isIOS) {
+            if (isStandaloneDisplay() || wasInstallBannerRecentlyDismissed()) return;
+
+            const banner = document.getElementById('installBanner');
+            const textEl = document.getElementById('installBannerText');
+            const actionBtn = document.getElementById('installBannerActionBtn');
+
+            if (isIOS) {
+                textEl.textContent = 'Tap ikon Share (kotak dengan panah ke atas) di Safari, lalu pilih "Add to Home Screen" untuk memasang aplikasi ini di layar utama.';
+                actionBtn.style.display = 'none';
+            } else {
+                textEl.textContent = 'Pasang aplikasi ini di perangkatmu untuk akses lebih cepat, tampilan layar penuh, dan tetap bisa dibuka walau koneksi lemah.';
+                actionBtn.style.display = 'inline-flex';
+            }
+            banner.classList.remove('hidden');
+        }
+
+        window.addEventListener('beforeinstallprompt', function (event) {
+            event.preventDefault();
+            deferredInstallPrompt = event;
+            showInstallBanner(false);
+        });
+
+        function handleInstallClick() {
+            const banner = document.getElementById('installBanner');
+            if (!deferredInstallPrompt) {
+                banner.classList.add('hidden');
+                return;
+            }
+            deferredInstallPrompt.prompt();
+            deferredInstallPrompt.userChoice.finally(function () {
+                deferredInstallPrompt = null;
+                banner.classList.add('hidden');
+            });
+        }
+
+        window.addEventListener('appinstalled', function () {
+            document.getElementById('installBanner').classList.add('hidden');
+            try {
+                localStorage.removeItem(INSTALL_DISMISS_KEY);
+            } catch (e) {
+                // ignore
+            }
+        });
+
+        // iOS Safari never fires 'beforeinstallprompt', so show manual instructions instead
+        (function checkIOSInstallHint() {
+            const ua = window.navigator.userAgent;
+            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
+            if (isIOS && isSafari && !isStandaloneDisplay()) {
+                setTimeout(function () { showInstallBanner(true); }, 2500);
+            }
+        })();
+
+        // ===== PWA: register the service worker =====
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('./sw.js').catch(function (err) {
+                    console.warn('Service worker registration failed:', err);
+                });
+            });
+        }
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974f9b7603e6fce3',t:'MTc1NjE3MjI4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
