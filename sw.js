@@ -1,7 +1,7 @@
 // ACAKADIL — Service Worker
 // NOTE: bump CACHE_VERSION every time index.html (or any cached asset) is updated,
 // otherwise returning visitors may keep seeing a stale cached version.
-const CACHE_VERSION = 'acakadil-v1';
+const CACHE_VERSION = 'acakadil-v2';
 
 const APP_SHELL = [
   './',

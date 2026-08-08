@@ -238,6 +238,18 @@
 
             <!-- Input Form -->
             <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-mid)] mb-2">
+                        📌 Judul Pembagian Kelompok (opsional)
+                    </label>
+                    <input type="text" id="groupTitle"
+                           class="input-dark w-full px-4 py-3 rounded-lg"
+                           placeholder="Contoh: Pembagian Kelompok Diskusi - Kelas 7A" maxlength="100">
+                    <p class="text-xs text-[var(--text-mid)] mt-1.5">
+                        Kalau diisi, judul ini akan muncul di bagian atas saat hasil diekspor ke JPG/PDF. Kalau dikosongkan, tampilan ekspor tidak berubah.
+                    </p>
+                </div>
+
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-[var(--text-mid)] mb-2">
@@ -336,6 +348,9 @@
 
         <!-- Results Section -->
         <div id="resultsSection" class="hidden glass-card glow-border-top rounded-2xl p-6 md:p-8 mb-6 animate-fade-in">
+            <div id="groupTitleDisplay" class="hidden text-center mb-3">
+                <h1 class="font-display text-xl md:text-2xl font-bold title-glow" id="groupTitleDisplayText"></h1>
+            </div>
             <h2 class="text-xl md:text-2xl font-semibold text-[var(--text-hi)] mb-6 flex items-center gap-2 font-display">
                 🎉 <span>Hasil Pembagian Kelompok Secara Acak</span>
             </h2>
@@ -724,6 +739,16 @@
             const resultsSection = document.getElementById('resultsSection');
             const groupsContainer = document.getElementById('groupsContainer');
 
+            // Optional title preview
+            const groupTitle = document.getElementById('groupTitle').value.trim();
+            const titleDisplay = document.getElementById('groupTitleDisplay');
+            if (groupTitle) {
+                document.getElementById('groupTitleDisplayText').textContent = groupTitle;
+                titleDisplay.classList.remove('hidden');
+            } else {
+                titleDisplay.classList.add('hidden');
+            }
+
             // Clear previous results
             groupsContainer.innerHTML = '';
 
@@ -765,6 +790,8 @@
 
         function resetForm() {
             // Clear all inputs
+            document.getElementById('groupTitle').value = '';
+            document.getElementById('groupTitleDisplay').classList.add('hidden');
             document.getElementById('totalStudents').value = '';
             document.getElementById('numGroups').value = '';
             document.getElementById('classSize').value = '';
@@ -916,6 +943,12 @@
         }
 
         // Create a clean export element (kept light/print-friendly for JPG & PDF output)
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
         function createExportElement() {
             const exportDiv = document.createElement('div');
             exportDiv.style.position = 'absolute';
@@ -938,12 +971,27 @@
             const totalStudents = document.getElementById('totalStudents').value;
             const numGroups = document.getElementById('numGroups').value;
             const classSize = document.getElementById('classSize').value;
+            const customTitle = document.getElementById('groupTitle').value.trim();
 
-            exportDiv.innerHTML = `
-                <div style="text-align: center; margin-bottom: 30px;">
+            // Optional custom title: only changes the header when filled in
+            const headerHTML = customTitle
+                ? `
+                    <h1 style="font-size: 30px; font-weight: 800; color: #111827; margin-bottom: 6px;">
+                        ${escapeHtml(customTitle)}
+                    </h1>
+                    <p style="color: #4b5563; font-size: 14px; font-weight: 600; margin-bottom: 14px;">
+                        🎲 Hasil Pembagian Kelompok Secara Acak by ACAKADIL
+                    </p>
+                `
+                : `
                     <h1 style="font-size: 28px; font-weight: bold; color: #1f2937; margin-bottom: 10px;">
                         🎲 Hasil Pembagian Kelompok Secara Acak by ACAKADIL
                     </h1>
+                `;
+
+            exportDiv.innerHTML = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    ${headerHTML}
                     <p style="color: #6b7280; font-size: 16px; margin-bottom: 5px;">
                         Tanggal: ${currentDate}
                     </p>
@@ -975,7 +1023,7 @@
                 <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
                     <p style="color: #6b7280; font-size: 12px;">
                         Dibuat dengan Aplikasi Pembagi Kelompok Secara Acak - WA: 085641051211<br>
-                        Link Aplikasi: <a href="https://dimasbn.azhiro.net/" target="_blank" style="color: #2563eb;">dimasbn.azhiro.net</a>
+                        Link Aplikasi: <a href="https://www.dimasbn.my.id/" target="_blank" style="color: #2563eb;">dimasbn.my.id</a>
                     </p>
                 </div>
             `;
